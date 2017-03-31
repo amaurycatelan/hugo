@@ -156,6 +156,7 @@ var (
 	cacheDir    string
 	contentDir  string
 	layoutDir   string
+	staticDir   string
 	cfgFile     string
 	destination string
 	logFile     string
@@ -228,6 +229,7 @@ func initHugoBuildCommonFlags(cmd *cobra.Command) {
 	cmd.Flags().StringVarP(&source, "source", "s", "", "filesystem path to read files relative from")
 	cmd.Flags().StringVarP(&contentDir, "contentDir", "c", "", "filesystem path to content directory")
 	cmd.Flags().StringVarP(&layoutDir, "layoutDir", "l", "", "filesystem path to layout directory")
+	cmd.Flags().StringVarP(&staticDir, "staticDir", "", "", "filesystem path to static directory")
 	cmd.Flags().StringVarP(&cacheDir, "cacheDir", "", "", "filesystem path to cache directory. Defaults: $TMPDIR/hugo_cache/")
 	cmd.Flags().BoolVarP(&ignoreCache, "ignoreCache", "", false, "Ignores the cache directory")
 	cmd.Flags().StringVarP(&destination, "destination", "d", "", "filesystem path to write files to")
@@ -368,6 +370,10 @@ func InitializeConfig(subCmdVs ...*cobra.Command) error {
 
 	if layoutDir != "" {
 		viper.Set("LayoutDir", layoutDir)
+	}
+
+	if staticDir != "" {
+		viper.Set("StaticDir", staticDir)
 	}
 
 	if cacheDir != "" {
