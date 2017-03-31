@@ -24,6 +24,8 @@ import (
 	"unicode"
 	"unicode/utf8"
 
+	"bufio"
+
 	"github.com/miekg/mmark"
 	"github.com/mitchellh/mapstructure"
 	"github.com/russross/blackfriday"
@@ -124,6 +126,29 @@ var mmarkExtensionMap = map[string]int{
 	"autoHeaderIds":          mmark.EXTENSION_AUTO_HEADER_IDS,
 }
 
+// MinifyHTML converts bytes to minified html and returns
+func MinifyHTML(html []byte) string {
+  // read line by line
+  minifiedHTML := ""
+  scanner := bufio.NewScanner(bytes.NewReader(html))
+  for scanner.Scan() {
+    // all leading and trailing white space of each line are removed
+    lineTrimmed := strings.TrimSpace(scanner.Text())
+    minifiedHTML += lineTrimmed
+    if len(lineTrimmed) > 0 {
+      // in case of following trimmed line:
+      // <div id="foo"
+      // minifiedHTML += " "
+      minifiedHTML += ""
+    }
+  }
+  if err := scanner.Err(); err != nil {
+    panic(err)
+  }
+
+  return minifiedHTML
+}
+
 // StripHTML accepts a string, strips out all HTML tags and returns it.
 func StripHTML(s string) string {
 
@@ -169,7 +194,8 @@ func stripEmptyNav(in []byte) []byte {
 
 // BytesToHTML converts bytes to type template.HTML.
 func BytesToHTML(b []byte) template.HTML {
-	return template.HTML(string(b))
+	// return template.HTML(string(b))
+	return template.HTML(MinifyHTML([]byte(b)))
 }
 
 // getHTMLRenderer creates a new Blackfriday HTML Renderer with the given configuration.
